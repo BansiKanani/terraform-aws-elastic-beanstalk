@@ -1,6 +1,9 @@
 resource "aws_elastic_beanstalk_application" "default" {
     name = var.app_name
     description = var.app_description
+    # appversion_lifecycle {
+    #     service_role = var.service_role
+    # }
 }
 resource "aws_elastic_beanstalk_application_version" "default" {
     name = var.app_name
@@ -13,12 +16,19 @@ resource "aws_elastic_beanstalk_environment" "default" {
     name = var.app_name
     application = aws_elastic_beanstalk_application.default.name
     solution_stack_name = "64bit Amazon Linux 2018.03 v2.9.5 running Python 3.6"
+    
+    version_label = aws_elastic_beanstalk_application_version.default.name
     wait_for_ready_timeout = var.wait_for_ready_timeout
+    
+    # tags = {
+    #     owner = var.owner
+    # }
+
 
     dynamic "setting" {
         for_each = {
             "VPCId" = var.vpc_id,
-            "ELBSubnets" = join(",", var.elb_subnets_ids),
+            # "ELBSubnets" = join(",", var.elb_subnets_ids),
             "Subnets" = join(",", var.subnets_ids),
         }
         content {
@@ -42,16 +52,17 @@ resource "aws_elastic_beanstalk_environment" "default" {
         }
     }
 
-    dynamic "setting" {
-        for_each = {
-            "LoadBalancerType" = var.loadbalancer_type
-        }
-        content {
-            namespace = "aws:elasticbeanstalk:environment"
-            name = setting.key
-            value = setting.value
-        }
-    }
+    # Application Load balancer might need some special treatment
+    # dynamic "setting" {
+    #     for_each = {
+    #         "LoadBalancerType" = var.loadbalancer_type
+    #     }
+    #     content {
+    #         namespace = "aws:elasticbeanstalk:environment"
+    #         name = setting.key
+    #         value = setting.value
+    #     }
+    # }
 
     dynamic "setting" {
         for_each = {
@@ -89,8 +100,4 @@ resource "aws_elastic_beanstalk_environment" "default" {
             value = setting.value
         }
     }
-
-
-
-
 }

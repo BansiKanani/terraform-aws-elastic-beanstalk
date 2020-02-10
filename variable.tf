@@ -29,17 +29,20 @@ variable "env" {
     EC2KeyName    = "ssh-trial"
 
     #  Public VPC
-    vpc_id                 = "vpc-701f710a"
-    SecurityGroupIds       = ["sg-031de133d3554fc4b"]
-    subnets_ids            = ["subnet-8e164ea0", "subnet-48668405", "subnet-cf6001f1", "subnet-8a849085"]
-    elb_subnets_ids        = ["subnet-cbcc9397", "subnet-4f4c1e28"]
+    vpc_id           = "vpc-701f710a"
+    SecurityGroupIds = ["sg-031de133d3554fc4b"]
+    subnets_ids      = ["subnet-8e164ea0", "subnet-48668405", "subnet-cf6001f1", "subnet-8a849085"]
+    elb_subnets_ids  = ["subnet-cbcc9397", "subnet-4f4c1e28"]
 
     # Private VPC
     # vpc_id                 = "vpc-024588dabb9de5508"
     # SecurityGroupIds       = ["sg-0e13bcaa1b1d963cf"]
     # subnets_ids            = ["subnet-0c8841dfbd0faadf7", "subnet-0b4b9f4d500fd2f6e", "subnet-012665bde776bc7c7", "subnet-0d751c08b72c6596d"]
     # elb_subnets_ids        = ["subnet-00778577f8df0fcd7", "subnet-0db40be6c10e7b7e0"]
-    loadbalancer_type      = "application"
+
+    # loadbalancer_type      = "application"
+    loadbalancer_type      = "network"
+
     wait_for_ready_timeout = "10m"
 
     autoscale_min            = 1
@@ -48,6 +51,9 @@ variable "env" {
     autoscale_Unit           = "Percent"
     autoscale_LowerThreshold = "20"
     autoscale_UpperThreshold = "80"
+
+    owner        = "devops@acko.tech"
+    service_role = "arn:aws:iam::384070122255:role/aws-elasticbeanstalk-service-role"
   }
 }
 # Application Info

@@ -29,4 +29,6 @@ module "elastic_beanstalk" {
   autoscale_Unit           = var.env.autoscale_Unit
   autoscale_LowerThreshold = var.env.autoscale_LowerThreshold
   autoscale_UpperThreshold = var.env.autoscale_UpperThreshold
+  owner                    = var.env.owner
+  service_role             = var.env.service_role
 }

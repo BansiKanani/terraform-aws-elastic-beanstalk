@@ -40,6 +40,7 @@ variable "autoscale_LowerThreshold" {
 }
 variable "autoscale_UpperThreshold" {
 }
-
-
-
+variable "owner" {
+}
+variable "service_role" {
+}
