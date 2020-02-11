@@ -1,9 +1,6 @@
 resource "aws_elastic_beanstalk_application" "default" {
     name = var.app_name
     description = var.app_description
-    # appversion_lifecycle {
-    #     service_role = var.service_role
-    # }
 }
 resource "aws_elastic_beanstalk_application_version" "default" {
     name = var.app_name
@@ -20,16 +17,18 @@ resource "aws_elastic_beanstalk_environment" "default" {
     version_label = aws_elastic_beanstalk_application_version.default.name
     wait_for_ready_timeout = var.wait_for_ready_timeout
     
-    # tags = {
-    #     owner = var.owner
-    # }
+    tags = {
+        "app_name" = "Terraform-${var.app_name}"
+        "owner" = var.owner
+    }
 
 
     dynamic "setting" {
         for_each = {
             "VPCId" = var.vpc_id,
-            # "ELBSubnets" = join(",", var.elb_subnets_ids),
+            "ELBSubnets" = join(",", var.elb_subnets_ids),
             "Subnets" = join(",", var.subnets_ids),
+            # "ELBScheme" = var.elb_scheme,
         }
         content {
             namespace = "aws:ec2:vpc"
@@ -52,21 +51,20 @@ resource "aws_elastic_beanstalk_environment" "default" {
         }
     }
 
-    # Application Load balancer might need some special treatment
-    # dynamic "setting" {
-    #     for_each = {
-    #         "LoadBalancerType" = var.loadbalancer_type
-    #     }
-    #     content {
-    #         namespace = "aws:elasticbeanstalk:environment"
-    #         name = setting.key
-    #         value = setting.value
-    #     }
-    # }
+    dynamic "setting" {
+        for_each = {
+            "LoadBalancerType" = var.loadbalancer_type
+        }
+        content {
+            namespace = "aws:elasticbeanstalk:environment"
+            name = setting.key
+            value = setting.value
+        }
+    }
 
     dynamic "setting" {
         for_each = {
-            "SecurityGroups" = join(",", var.SecurityGroupIds)
+            "SecurityGroups" = join(",", var.SecurityGroupIds),
         }
         content {
             namespace = "aws:elbv2:loadbalancer"
@@ -92,7 +90,7 @@ resource "aws_elastic_beanstalk_environment" "default" {
     dynamic "setting" {
         for_each = {
             "MinSize" = var.autoscale_min,
-            "MaxSize" = var.autoscale_max
+            "MaxSize" = var.autoscale_max,
         }
         content {
             namespace = "aws:autoscaling:asg"

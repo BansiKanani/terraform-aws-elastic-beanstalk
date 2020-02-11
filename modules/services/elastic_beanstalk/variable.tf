@@ -8,8 +8,8 @@ variable "bucket_id" {
 }
 variable "object_id" {
 }
-variable "ami" {
-}
+# variable "ami" {
+# }
 variable "instance_type" {
   	default = "t2.micro"
 }
@@ -42,5 +42,5 @@ variable "autoscale_UpperThreshold" {
 }
 variable "owner" {
 }
-variable "service_role" {
+variable "elb_scheme" { 
 }
