@@ -2,33 +2,23 @@ resource "aws_elastic_beanstalk_application" "default" {
     name = var.app_name
     description = var.app_description
 }
-resource "aws_elastic_beanstalk_application_version" "default" {
-    name = var.app_name
-    application = aws_elastic_beanstalk_application.default.name
-    description = var.app_description
-    bucket = var.bucket_id
-    key = var.object_id
-}
+
 resource "aws_elastic_beanstalk_environment" "default" {
     name = var.app_name
     application = aws_elastic_beanstalk_application.default.name
-    solution_stack_name = "64bit Amazon Linux 2018.03 v2.9.5 running Python 3.6"
-    
-    version_label = aws_elastic_beanstalk_application_version.default.name
+    solution_stack_name = var.solution_stack_name
     wait_for_ready_timeout = var.wait_for_ready_timeout
-    
     tags = {
         "app_name" = "Terraform-${var.app_name}"
         "owner" = var.owner
     }
 
-
     dynamic "setting" {
         for_each = {
-            "VPCId" = var.vpc_id,
-            "ELBSubnets" = join(",", var.elb_subnets_ids),
-            "Subnets" = join(",", var.subnets_ids),
-            # "ELBScheme" = var.elb_scheme,
+            "VPCId" = var.VPCId,
+            "ELBSubnets" = join(",", var.ELBSubnets),
+            "Subnets" = join(",", var.Subnets),
+            "ELBScheme" = var.ELBScheme,
         }
         content {
             namespace = "aws:ec2:vpc"
@@ -39,10 +29,10 @@ resource "aws_elastic_beanstalk_environment" "default" {
 
     dynamic "setting" {
         for_each = {
-            "MeasureName" = var.autoscale_MeasureName,
-            "Unit" = var.autoscale_Unit,
-            "LowerThreshold" = var.autoscale_LowerThreshold,
-            "UpperThreshold" = var.autoscale_UpperThreshold
+            "MeasureName" = var.MeasureName,
+            "Unit" = var.Unit,
+            "LowerThreshold" = var.LowerThreshold,
+            "UpperThreshold" = var.UpperThreshold
         }
         content {
             namespace = "aws:autoscaling:trigger"
@@ -53,7 +43,7 @@ resource "aws_elastic_beanstalk_environment" "default" {
 
     dynamic "setting" {
         for_each = {
-            "LoadBalancerType" = var.loadbalancer_type
+            "LoadBalancerType" = var.LoadBalancerType
         }
         content {
             namespace = "aws:elasticbeanstalk:environment"
@@ -64,7 +54,7 @@ resource "aws_elastic_beanstalk_environment" "default" {
 
     dynamic "setting" {
         for_each = {
-            "SecurityGroups" = join(",", var.SecurityGroupIds),
+            "SecurityGroups" = join(",", var.elb_SecurityGroups),
         }
         content {
             namespace = "aws:elbv2:loadbalancer"
@@ -76,9 +66,9 @@ resource "aws_elastic_beanstalk_environment" "default" {
     dynamic "setting" {
         for_each = {
             # "ImageId" = var.ami,
-            "InstanceType" = var.instance_type,
+            "InstanceType" = var.InstanceType,
             "EC2KeyName" = var.EC2KeyName,
-            "SecurityGroups" = join(",", var.SecurityGroupIds)
+            "SecurityGroups" = join(",", var.ec2_SecurityGroups)
         }
         content {
             namespace = "aws:autoscaling:launchconfiguration"
@@ -89,11 +79,20 @@ resource "aws_elastic_beanstalk_environment" "default" {
 
     dynamic "setting" {
         for_each = {
-            "MinSize" = var.autoscale_min,
-            "MaxSize" = var.autoscale_max,
+            "MinSize" = var.MinSize,
+            "MaxSize" = var.MaxSize,
         }
         content {
             namespace = "aws:autoscaling:asg"
+            name = setting.key
+            value = setting.value
+        }
+    }
+
+    dynamic "setting" {
+        for_each = var.EnvironmentPropertiesMap
+        content {
+            namespace = "aws:elasticbeanstalk:application:environment"
             name = setting.key
             value = setting.value
         }

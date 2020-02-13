@@ -1,52 +1,61 @@
-# Environment Info
-variable "publc-subnet-map" {
-  default = {
-    us-east-1a = "subnet-cbcc9397"
-    us-east-1b = "subnet-4f4c1e28"
-    us-east-1c = "subnet-8e164ea0"
-    us-east-1d = "subnet-48668405"
-    us-east-1e = "subnet-cf6001f1"
-    us-east-1f = "subnet-8a849085"
-  }
-}
-variable "env" {
-  default = {
-    region      = "us-east-1"
-    av_zones    = ["us-east-1a", "us-east-1b", "us-east-1c", "us-east-1d", "us-east-1e", "us-east-1f"]
-    bucket_name = "somerandombucketgfgjhuikjiolkjiuygytrfrasdscvfd"
-    # ami           = "ami-0f86bb438e080dd6b"
-    instance_type = "t2.micro"
-    EC2KeyName    = "key1"
-
-    #  Public VPC
-    vpc_id           = "vpc-701f710a"
-    SecurityGroupIds = ["sg-031de133d3554fc4b"]
-    subnets_ids      = ["subnet-cbcc9397", "subnet-4f4c1e28", "subnet-8e164ea0", "subnet-48668405", "subnet-cf6001f1", "subnet-8a849085"]
-    elb_subnets_ids  = ["subnet-cbcc9397", "subnet-4f4c1e28", "subnet-8e164ea0", "subnet-48668405", "subnet-cf6001f1", "subnet-8a849085"]
-    elb_scheme       = "public"
-
-    # Private VPC
-    # vpc_id                 = "vpc-024588dabb9de5508"
-    # SecurityGroupIds       = ["sg-0e13bcaa1b1d963cf"]
-    # subnets_ids            = ["subnet-0c8841dfbd0faadf7", "subnet-0b4b9f4d500fd2f6e", "subnet-012665bde776bc7c7", "subnet-0d751c08b72c6596d"]
-    # elb_subnets_ids        = ["subnet-00778577f8df0fcd7", "subnet-0db40be6c10e7b7e0"]
-
-    loadbalancer_type        = "application"
-    wait_for_ready_timeout   = "10m"
-    autoscale_min            = 1
-    autoscale_max            = 2
-    autoscale_MeasureName    = "CPUUtilization"
-    autoscale_Unit           = "Percent"
-    autoscale_LowerThreshold = "20"
-    autoscale_UpperThreshold = "80"
-  }
-}
-# Application Info
-variable "app" {
+# variable "variable" {         # don't touch it
+#   description = "description"
+#   default = {
+#       # edit values here
+#   }
+# }
+# ------------------------------Tags------------------------------------------------
+variable "tags" {
+  description = "Tags will have no effect on functioning of the environment."
   default = {
     app_name        = "TestPythonApp"
-    owner           = "devops@acko.tech"
     app_description = "A python application"
-    source_file     = "python-v1.zip"
+    owner           = "devops@acko.tech"
+  }
+}
+# ----------------------------Enviroment Config--------------------------------------------------
+variable "instance" {
+  description = "Config for individual instances"
+  default = {
+    instance_type          = "t2.micro"
+    ec2_key_name           = "key1"
+    wait_for_ready_timeout = "10m"
+    ImageId                = "ami-04b2418be76894465"
+    solution_stack_name    = "64bit Amazon Linux 2018.03 v2.9.5 running Python 3.6"
+  }
+}
+# ----------------------------Autoscale Config--------------------------------------------------
+variable "autoscale" {
+  description = "When to scale out and scale in. Number of instances we need."
+  default = {
+    measure_name        = "CPUUtilization"
+    measure_unit        = "Percent"
+    lower_threshold     = "20"
+    upper_threshold     = "80"
+    min_instance_count  = 1
+    max_instance_count  = 2
+    loadbalancer_type   = "application"
+    loadbalancer_scheme = "public"
+  }
+}
+# ----------------------------Environment Properties------------------------------------------------
+variable "env_prop" {
+  description = "Environment Properties or variables. Insert in default section below."
+  default = {
+    var_name_1 = "some-random-value-1"
+    var_name_2 = "some-random-value-2"
+  }
+}
+# ---------------------------- Other Config------------------------------------------------
+variable "other" {
+  description = "Network config for cloud resources."
+  default = {
+    region                          = "us-east-1"
+    av_zones                        = ["us-east-1a", "us-east-1b", "us-east-1c", "us-east-1d", "us-east-1e", "us-east-1f"]
+    vpc_id                          = "vpc-701f710a",
+    instance_subnets_ids            = ["subnet-cbcc9397", "subnet-4f4c1e28", "subnet-8e164ea0", "subnet-48668405", "subnet-cf6001f1", "subnet-8a849085"]
+    loadbalancer_subnets_ids        = ["subnet-cbcc9397", "subnet-4f4c1e28", "subnet-8e164ea0", "subnet-48668405", "subnet-cf6001f1", "subnet-8a849085"]
+    instance_security_group_ids     = ["sg-031de133d3554fc4b"]
+    loadbalancer_security_group_ids = ["sg-031de133d3554fc4b"]
   }
 }

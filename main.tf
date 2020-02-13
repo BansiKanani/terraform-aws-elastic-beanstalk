@@ -1,34 +1,34 @@
 provider "aws" {
   profile = "default"
-  region  = var.env.region
+  region  = var.other.region
 }
-module "s3" {
-  source      = "./modules/data-store/s3"
-  bucket_name = var.env.bucket_name
-  key_name    = var.app.source_file
-  source_file = var.app.source_file
-}
+
 module "elastic_beanstalk" {
-  app_name                 = var.app.app_name
-  app_description          = var.app.app_description
-  source                   = "./modules/services/elastic_beanstalk"
-  # ami                      = var.env.ami
-  instance_type            = var.env.instance_type
-  bucket_id                = module.s3.bucket_id
-  object_id                = module.s3.object_id
-  vpc_id                   = var.env.vpc_id
-  autoscale_min            = var.env.autoscale_min
-  autoscale_max            = var.env.autoscale_max
-  EC2KeyName               = var.env.EC2KeyName
-  SecurityGroupIds         = var.env.SecurityGroupIds
-  subnets_ids              = var.env.subnets_ids
-  elb_subnets_ids          = var.env.elb_subnets_ids
-  loadbalancer_type        = var.env.loadbalancer_type
-  wait_for_ready_timeout   = var.env.wait_for_ready_timeout
-  autoscale_MeasureName    = var.env.autoscale_MeasureName
-  autoscale_Unit           = var.env.autoscale_Unit
-  autoscale_LowerThreshold = var.env.autoscale_LowerThreshold
-  autoscale_UpperThreshold = var.env.autoscale_UpperThreshold
-  owner                    = var.app.owner
-  elb_scheme               = var.env.elb_scheme
+  source = "./modules/elastic_beanstalk"
+
+  app_name                 = var.tags.app_name
+  app_description          = var.tags.app_description
+  owner                    = var.tags.owner
+  EnvironmentPropertiesMap = var.env_prop
+
+  ImageId                = var.instance.ImageId
+  EC2KeyName             = var.instance.ec2_key_name
+  InstanceType           = var.instance.instance_type
+  solution_stack_name    = var.instance.solution_stack_name
+  wait_for_ready_timeout = var.instance.wait_for_ready_timeout
+
+  VPCId              = var.other.vpc_id
+  ec2_SecurityGroups = var.other.instance_security_group_ids
+  elb_SecurityGroups = var.other.loadbalancer_security_group_ids
+  Subnets            = var.other.instance_subnets_ids
+  ELBSubnets         = var.other.loadbalancer_subnets_ids
+
+  MeasureName      = var.autoscale.measure_name
+  Unit             = var.autoscale.measure_unit
+  MinSize          = var.autoscale.min_instance_count
+  MaxSize          = var.autoscale.max_instance_count
+  LowerThreshold   = var.autoscale.lower_threshold
+  UpperThreshold   = var.autoscale.upper_threshold
+  LoadBalancerType = var.autoscale.loadbalancer_type
+  ELBScheme        = var.autoscale.loadbalancer_scheme
 }
