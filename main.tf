@@ -11,8 +11,9 @@ module "elastic_beanstalk" {
   owner                    = var.tags.owner
   EnvironmentPropertiesMap = var.env_prop
 
-  ImageId                = var.instance.ImageId
+  # ImageId                = var.instance.ImageId
   EC2KeyName             = var.instance.ec2_key_name
+  IamInstanceProfile     = var.instance.IamInstanceProfile
   InstanceType           = var.instance.instance_type
   solution_stack_name    = var.instance.solution_stack_name
   wait_for_ready_timeout = var.instance.wait_for_ready_timeout

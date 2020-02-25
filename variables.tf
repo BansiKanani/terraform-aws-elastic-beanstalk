@@ -8,20 +8,21 @@
 variable "tags" {
   description = "Tags will have no effect on functioning of the environment."
   default = {
-    app_name        = "TestPythonApp"
-    app_description = "A python application"
-    owner           = "devops@acko.tech"
+    app_name        = "entity-service-uat"
+    app_description = "Entity service for UAT"
+    owner           = "devops@acko.dev"
   }
 }
 # ----------------------------Enviroment Config--------------------------------------------------
 variable "instance" {
   description = "Config for individual instances"
   default = {
-    instance_type          = "t2.micro"
-    ec2_key_name           = "key1"
+    instance_type          = "t2.nano"
+    ec2_key_name           = "entity-service"
+    IamInstanceProfile     = "aws-elasticbeanstalk-ec2-role"
     wait_for_ready_timeout = "10m"
-    ImageId                = "ami-04b2418be76894465"
-    solution_stack_name    = "64bit Amazon Linux 2018.03 v2.9.5 running Python 3.6"
+    # ImageId                = "ami-081089dc4c9cc5c50"
+    solution_stack_name = "64bit Amazon Linux 2018.03 v2.10.2 running Java 8"
   }
 }
 # ----------------------------Autoscale Config--------------------------------------------------
@@ -35,27 +36,27 @@ variable "autoscale" {
     min_instance_count  = 1
     max_instance_count  = 2
     loadbalancer_type   = "application"
-    loadbalancer_scheme = "public"
+    loadbalancer_scheme = "internal"
   }
 }
 # ----------------------------Environment Properties------------------------------------------------
 variable "env_prop" {
   description = "Environment Properties or variables. Insert in default section below."
   default = {
-    var_name_1 = "some-random-value-1"
-    var_name_2 = "some-random-value-2"
+    # var_name_1 = "some-random-value-1"
+    # var_name_2 = "some-random-value-2"
   }
 }
 # ---------------------------- Other Config------------------------------------------------
 variable "other" {
   description = "Network config for cloud resources."
   default = {
-    region                          = "us-east-1"
-    av_zones                        = ["us-east-1a", "us-east-1b", "us-east-1c", "us-east-1d", "us-east-1e", "us-east-1f"]
-    vpc_id                          = "vpc-701f710a",
-    instance_subnets_ids            = ["subnet-cbcc9397", "subnet-4f4c1e28", "subnet-8e164ea0", "subnet-48668405", "subnet-cf6001f1", "subnet-8a849085"]
-    loadbalancer_subnets_ids        = ["subnet-cbcc9397", "subnet-4f4c1e28", "subnet-8e164ea0", "subnet-48668405", "subnet-cf6001f1", "subnet-8a849085"]
-    instance_security_group_ids     = ["sg-031de133d3554fc4b"]
-    loadbalancer_security_group_ids = ["sg-031de133d3554fc4b"]
+    region                          = "ap-south-1"
+    av_zones                        = ["ap-south-1a", "ap-south-1b"]
+    vpc_id                          = "vpc-a9b9e2c1",
+    instance_subnets_ids            = ["subnet-06593149ecdc27f22", "subnet-0a9b9a51140530d8c"] # private-1a, priate-1b
+    loadbalancer_subnets_ids        = ["subnet-06593149ecdc27f22", "subnet-0a9b9a51140530d8c"]
+    instance_security_group_ids     = ["sg-03cb80268f9132a56"] # default-internal-all
+    loadbalancer_security_group_ids = ["sg-03cb80268f9132a56"] # default-internal-all
   }
 }

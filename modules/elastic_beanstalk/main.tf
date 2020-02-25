@@ -9,7 +9,7 @@ resource "aws_elastic_beanstalk_environment" "default" {
     solution_stack_name = var.solution_stack_name
     wait_for_ready_timeout = var.wait_for_ready_timeout
     tags = {
-        "app_name" = "Terraform-${var.app_name}"
+        "app_name" = var.app_name
         "owner" = var.owner
     }
 
@@ -65,10 +65,11 @@ resource "aws_elastic_beanstalk_environment" "default" {
 
     dynamic "setting" {
         for_each = {
-            # "ImageId" = var.ami,
+            # "ImageId" = var.ImageId,
             "InstanceType" = var.InstanceType,
             "EC2KeyName" = var.EC2KeyName,
             "SecurityGroups" = join(",", var.ec2_SecurityGroups)
+            "IamInstanceProfile" = var.IamInstanceProfile
         }
         content {
             namespace = "aws:autoscaling:launchconfiguration"

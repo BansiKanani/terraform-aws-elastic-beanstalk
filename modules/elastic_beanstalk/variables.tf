@@ -4,9 +4,9 @@ variable "app_name" {
 variable "app_description" {
 	description = "Elastic Beanstalk Application Description (tag)"
 }
-variable "ImageId" {
-	description = "AMI to use to build the environment"
-}
+# variable "ImageId" {
+# 	description = "AMI to use to build the environment"
+# }
 variable "solution_stack_name" {
 	description = "Environment type i.e. 64bit Amazon Linux 2018.03 v2.9.5 running Python 3.6"
 }
@@ -24,6 +24,9 @@ variable "MaxSize" {
 }
 variable "EC2KeyName" {
 	description = "Key to use to acces EC2 instances"
+}
+variable "IamInstanceProfile" {
+	description = "IamInstanceProfile to set for EC2 instances"
 }
 variable "ec2_SecurityGroups" {
 	description = "List of security group Ids"
